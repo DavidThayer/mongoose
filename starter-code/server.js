@@ -53,16 +53,58 @@ app.post('/api/todos', function create(req, res) {
 
 // get one todo
 app.get('/api/todos/:id', function show(req, res) {
-
+  var todoId = req.params.id;
+  db.Todo.findOne({ _id: todoId }, function (err, foundTodo) {
+    foundTodo.task = req.body.task;
+    foundTodo.description = req.body.description;
+    res.json(foundTodo);
+  })
 });
 
 // update todo
 app.put('/api/todos/:id', function update(req, res) {
+// find object with id - findOne
+// update object -
+// save to db
+// get todo id from url params (`req.params`)
+  var todoId = req.params.id;
 
-});
+  // find todo in db by id
+  db.Todo.findOne({ _id: todoId }, function(err, foundTodo) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+    } else {
+      // update the todos's attributes
+      foundTodo.task = req.body.task;
+      foundTodo.description = req.body.description;
 
-// delete todo
-app.delete('/api/todos/:id', function destroy(req, res) {
+      // save updated todo in db
+      foundTodo.save(function(err, savedTodo) {
+        if (err) {
+          res.status(500).json({ error: err.message });
+        } else {
+          res.json(savedTodo);
+        }
+      });
+    }
+  });
+
+
+//   db.Todo.findOne({ _id: todoId }, function (err, foundTodo) {
+//     var todoId = req.params.id;
+//     // update todo's attributes
+//     foundTodo.task = req.body.task;
+//     foundTodo.description = req.body.description;
+//   });
+//   // save updated todo in db
+//   foundTodo.save(function(err, savedTodo) {
+//     res.json(savedTodo);
+//   });
+//
+// });
+//
+// // delete todo
+// app.delete('/api/todos/:id', function destroy(req, res) {
 
 });
 
